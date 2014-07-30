@@ -72,7 +72,7 @@ public class CapturePoints : MonoBehaviour {
 					foreach (LineRenderer lineRenderer in gestureLinesRenderer) {
 
 						lineRenderer.SetVertexCount(0);
-						Destroy(lineRenderer);
+						Destroy(lineRenderer.gameObject);
 					}
 
 					gestureLinesRenderer.Clear();
