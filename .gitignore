@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+Library
+/Temp
+*.csproj
+*.pidb
+*.sln
+*.userprefs
+*.unityproj
+InspectorExpandedItems.asset
+EditorUserBuildSettings.asset
