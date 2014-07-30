@@ -14,16 +14,56 @@ namespace PDollarDemo
         /// </summary>
         /// <param name="xml"></param>
         /// <returns></returns>
-		public static Gesture ReadGesture(string xml)
+		public static Gesture ReadGestureFromXML(string xml) {
+
+			XmlTextReader xmlReader = null;
+			Gesture gesture = null;
+
+			try {
+
+				xmlReader = new XmlTextReader(new StringReader(xml));
+				gesture = ReadGesture(xmlReader);
+
+			} finally {
+
+				if (xmlReader != null)
+					xmlReader.Close();
+			}
+
+			return gesture;
+		}
+
+		/// <summary>
+		/// Reads a multistroke gesture from an XML file
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
+		public static Gesture ReadGestureFromFile(string fileName) {
+
+			XmlTextReader xmlReader = null;
+			Gesture gesture = null;
+			
+			try {
+				
+				xmlReader = new XmlTextReader(File.OpenText(fileName));
+				gesture = ReadGesture(xmlReader);
+				
+			} finally {
+				
+				if (xmlReader != null)
+					xmlReader.Close();
+			}
+			
+			return gesture;
+		}
+
+		private static Gesture ReadGesture(XmlTextReader xmlReader)
         {
             List<Point> points = new List<Point>();
-            XmlTextReader xmlReader = null;
             int currentStrokeIndex = -1;
             string gestureName = "";
             try
             {
-				xmlReader = new XmlTextReader(new StringReader(xml));
-
                 while (xmlReader.Read())
                 {
                     if (xmlReader.NodeType != XmlNodeType.Element) continue;

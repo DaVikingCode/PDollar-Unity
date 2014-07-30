@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 using PDollarGestureRecognizer;
 using PDollarDemo;
@@ -26,16 +28,22 @@ public class CapturePoints : MonoBehaviour {
 	//GUI
 	private string message;
 	private bool recognized;
+	private string newGestureName = "";
 
 	void Start () {
 
 		platform = Application.platform;
 		drawArea = new Rect(0, 0, Screen.width - Screen.width / 3, Screen.height);
 
+		//Load pre-made gestures
 		TextAsset[] gesturesXml = Resources.LoadAll<TextAsset>("GestureSet/10-stylus-MEDIUM/");
-		
 		foreach (TextAsset gestureXml in gesturesXml)
-			trainingSet.Add(GestureIO.ReadGesture(gestureXml.text));
+			trainingSet.Add(GestureIO.ReadGestureFromXML(gestureXml.text));
+
+		//Load user custom gestures
+		string[] filePaths = Directory.GetFiles(Application.persistentDataPath, "*.xml");
+		foreach (string filePath in filePaths)
+			trainingSet.Add(GestureIO.ReadGestureFromFile(filePath));
 	}
 
 	void Update () {
@@ -57,6 +65,7 @@ public class CapturePoints : MonoBehaviour {
 				if (recognized) {
 
 					recognized = false;
+					strokeId = -1;
 
 					points.Clear();
 
@@ -100,15 +109,25 @@ public class CapturePoints : MonoBehaviour {
 			recognized = true;
 
 			Gesture candidate = new Gesture(points.ToArray());
-			
 			Result gestureResult = PointCloudRecognizer.Classify(candidate, trainingSet.ToArray());
 			
 			message = gestureResult.GestureClass + " " + gestureResult.Score;
-			
-			strokeId = -1;
+		}
+
+		GUI.Label(new Rect(Screen.width - 200, 150, 70, 30), "Add as: ");
+		newGestureName = GUI.TextField(new Rect(Screen.width - 150, 150, 100, 30), newGestureName);
+
+		if (GUI.Button(new Rect(Screen.width - 50, 150, 50, 30), "Add") && points.Count > 0 && newGestureName != "") {
+
+			string fileName = String.Format("{0}/{1}-{2}.xml", Application.persistentDataPath, newGestureName, DateTime.Now.ToFileTime());
+			GestureIO.WriteGesture(points.ToArray(), newGestureName, fileName);
+
+			trainingSet.Add(new Gesture(points.ToArray(), newGestureName));
+
+			newGestureName = "";
 		}
 	}
-
+	
 	private Vector3 WorldCoordinateForGesturePoint(Vector3 gesturePoint) {
 
 		Vector3 worldCoordinate = new Vector3(gesturePoint.x, gesturePoint.y, 10);
