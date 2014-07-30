@@ -7,28 +7,37 @@ using PDollarDemo;
 
 public class CapturePoints : MonoBehaviour {
 
-	public Transform gestureOnScreen;
+	public Transform gestureOnScreenPrefab;
 
 	private List<Gesture> trainingSet = new List<Gesture>();
 
 	private List<Point> points = new List<Point>();
 	private int strokeId = -1;
+
 	private Vector3 virtualKeyPosition = Vector2.zero;
+	private Rect drawArea;
 
 	private RuntimePlatform platform;
+	private int vertexCount = 0;
 
-	// Use this for initialization
+	private List<LineRenderer> gestureLinesRenderer = new List<LineRenderer>();
+	private LineRenderer currentGestureLineRenderer;
+
+	//GUI
+	private string message;
+	private bool recognized;
+
 	void Start () {
 
 		platform = Application.platform;
+		drawArea = new Rect(0, 0, Screen.width - Screen.width / 3, Screen.height);
 
 		TextAsset[] gesturesXml = Resources.LoadAll<TextAsset>("GestureSet/10-stylus-MEDIUM/");
 		
 		foreach (TextAsset gestureXml in gesturesXml)
 			trainingSet.Add(GestureIO.ReadGesture(gestureXml.text));
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 
 		if (platform == RuntimePlatform.Android || platform == RuntimePlatform.IPhonePlayer) {
@@ -41,25 +50,61 @@ public class CapturePoints : MonoBehaviour {
 			}
 		}
 
-		if (Input.GetMouseButtonDown(0)) {
-			points.Clear();
-			++strokeId;
+		if (drawArea.Contains(virtualKeyPosition)) {
+
+			if (Input.GetMouseButtonDown(0)) {
+
+				if (recognized) {
+
+					recognized = false;
+
+					points.Clear();
+
+					foreach (LineRenderer lineRenderer in gestureLinesRenderer) {
+
+						lineRenderer.SetVertexCount(0);
+						Destroy(lineRenderer);
+					}
+
+					gestureLinesRenderer.Clear();
+
+				}
+
+				++strokeId;
+				
+				Transform tmpGesture = Instantiate(gestureOnScreenPrefab, transform.position, transform.rotation) as Transform;
+				currentGestureLineRenderer = tmpGesture.GetComponent<LineRenderer>();
+				
+				gestureLinesRenderer.Add(currentGestureLineRenderer);
+				
+				vertexCount = 0;
+			}
+			
+			if (Input.GetMouseButton(0)) {
+				points.Add(new Point(virtualKeyPosition.x, -virtualKeyPosition.y, strokeId));
+
+				currentGestureLineRenderer.SetVertexCount(++vertexCount);
+				currentGestureLineRenderer.SetPosition(vertexCount - 1, WorldCoordinateForGesturePoint(virtualKeyPosition));
+			}
 		}
-		
-		if (Input.GetMouseButton(0)) {
-			points.Add(new Point(virtualKeyPosition.x, -virtualKeyPosition.y, strokeId));
-			gestureOnScreen.position = WorldCoordinateForGesturePoint(virtualKeyPosition);
-		}
-		
-		if (Input.GetMouseButtonUp(0)) {
+	}
+
+	void OnGUI() {
+
+		GUI.Box(drawArea, "Draw Area");
+
+		GUI.Label(new Rect(10, Screen.height - 40, 500, 50), message);
+
+		if (GUI.Button(new Rect(Screen.width - 100, 10, 100, 30), "Recognize")) {
+
+			recognized = true;
 
 			Gesture candidate = new Gesture(points.ToArray());
 			
 			Result gestureResult = PointCloudRecognizer.Classify(candidate, trainingSet.ToArray());
 			
-			Debug.Log(gestureResult.GestureClass);
-			Debug.Log(gestureResult.Score);
-
+			message = gestureResult.GestureClass + " " + gestureResult.Score;
+			
 			strokeId = -1;
 		}
 	}
