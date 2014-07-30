@@ -120,7 +120,10 @@ public class CapturePoints : MonoBehaviour {
 		if (GUI.Button(new Rect(Screen.width - 50, 150, 50, 30), "Add") && points.Count > 0 && newGestureName != "") {
 
 			string fileName = String.Format("{0}/{1}-{2}.xml", Application.persistentDataPath, newGestureName, DateTime.Now.ToFileTime());
-			GestureIO.WriteGesture(points.ToArray(), newGestureName, fileName);
+
+			#if !UNITY_WEBPLAYER
+				GestureIO.WriteGesture(points.ToArray(), newGestureName, fileName);
+			#endif
 
 			trainingSet.Add(new Gesture(points.ToArray(), newGestureName));
 
