@@ -64,7 +64,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  iPhoneBundleIdentifier: com.davikingcode.PDollar-Unity
+  iPhoneBundleIdentifier: com.davikingcode.PDollar
   metroEnableIndependentInputSource: 0
   metroEnableLowLatencyPresentationAPI: 0
   productGUID: 5418926cf37a34f559f56e2b1384210e
