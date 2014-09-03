@@ -12,3 +12,4 @@ EditorUserBuildSettings.asset
 Web/
 *.apk
 /iOS
+Assets/AssetStoreTools*

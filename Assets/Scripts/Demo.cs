@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 
 using PDollarGestureRecognizer;
-using PDollarDemo;
 
-public class CapturePoints : MonoBehaviour {
+public class Demo : MonoBehaviour {
 
 	public Transform gestureOnScreenPrefab;
 
@@ -76,7 +75,6 @@ public class CapturePoints : MonoBehaviour {
 					}
 
 					gestureLinesRenderer.Clear();
-
 				}
 
 				++strokeId;
@@ -93,7 +91,7 @@ public class CapturePoints : MonoBehaviour {
 				points.Add(new Point(virtualKeyPosition.x, -virtualKeyPosition.y, strokeId));
 
 				currentGestureLineRenderer.SetVertexCount(++vertexCount);
-				currentGestureLineRenderer.SetPosition(vertexCount - 1, WorldCoordinateForGesturePoint(virtualKeyPosition));
+				currentGestureLineRenderer.SetPosition(vertexCount - 1, Camera.main.ScreenToWorldPoint(new Vector3(virtualKeyPosition.x, virtualKeyPosition.y, 10)));
 			}
 		}
 	}
@@ -129,12 +127,5 @@ public class CapturePoints : MonoBehaviour {
 
 			newGestureName = "";
 		}
-	}
-	
-	private Vector3 WorldCoordinateForGesturePoint(Vector3 gesturePoint) {
-
-		Vector3 worldCoordinate = new Vector3(gesturePoint.x, gesturePoint.y, 10);
-
-		return Camera.main.ScreenToWorldPoint(worldCoordinate);
 	}
 }

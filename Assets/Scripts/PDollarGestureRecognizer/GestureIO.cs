@@ -1,11 +1,10 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
-using PDollarGestureRecognizer;
 
 using UnityEngine;
 
-namespace PDollarDemo
+namespace PDollarGestureRecognizer
 {
     public class GestureIO
     {
