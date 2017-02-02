@@ -2,7 +2,7 @@ $P Point-Cloud Recognizer
 =========================
 [Original article](http://depts.washington.edu/aimgroup/proj/dollar/pdollar.html). [Unity Web demo](http://aymericlamboley.fr/blog/wp-content/uploads/2014/07/index.html).
 
-This is an adaptation of the original C# code for working with Unity.
+This is an adaptation of the original C# code for Unity.
 
 In the demo, only one point-cloud template is loaded for each of the 16 gesture types. You can add additional templates as you wish, and even define your own custom gesture templates.
 
