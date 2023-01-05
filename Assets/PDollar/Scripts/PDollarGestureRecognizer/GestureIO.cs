@@ -80,8 +80,8 @@ namespace PDollarGestureRecognizer
                             break;
                         case "Point":
                             points.Add(new Point(
-                                float.Parse(xmlReader["X"]),
-                                float.Parse(xmlReader["Y"]),
+                                float.Parse(xmlReader["X"].Replace(',', '.'), CultureInfo.InvariantCulture),
+                                float.Parse(xmlReader["Y"].Replace(',', '.'), CultureInfo.InvariantCulture),
                                 currentStrokeIndex
                             ));
                             break;
